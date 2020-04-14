@@ -75,6 +75,7 @@ export class DebounceInput extends React.PureComponent {
 
 
   onChange = event => {
+    console.log('onChange');
     event.persist();
 
     const {value: oldValue} = this.state;
@@ -83,13 +84,18 @@ export class DebounceInput extends React.PureComponent {
     this.setState({value: event.target.value}, () => {
       const {value} = this.state;
 
+      console.log({ value });
+      console.log('min: ' + minLength);
+
       if (value.length >= minLength) {
+        console.log('trigger 1');
         this.notify(event);
         return;
       }
 
       // If user hits backspace and goes below minLength consider it cleaning the value
       if (oldValue.length > value.length) {
+        console.log('trigger 2');
         this.notify({...event, target: {...event.target, value: ''}});
       }
     });
@@ -121,12 +127,18 @@ export class DebounceInput extends React.PureComponent {
 
 
   createNotifier = debounceTimeout => {
+    console.log('create notifier');
+
     if (debounceTimeout < 0) {
+      console.log('fuck');
       this.notify = () => null;
     } else if (debounceTimeout === 0) {
+      console.log('as should be');
       this.notify = this.doNotify;
     } else {
+      console.log('other')
       const debouncedChangeFunc = debounce(event => {
+        console.log(event)
         this.isDebouncing = false;
         this.doNotify(event);
       }, debounceTimeout);
@@ -148,6 +160,10 @@ export class DebounceInput extends React.PureComponent {
 
   doNotify = (...args) => {
     const {onChange} = this.props;
+
+    console.log('calbback works');
+    console.log(args)
+    console.log(args.target.value)
 
     onChange(...args);
   };
